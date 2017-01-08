@@ -5,11 +5,17 @@
 
 #define DEBUG true
 
-#define SERVO_1     D2
-#define SERVO_2     D3
-#define SERVO_3     D4
-#define SERVO_4     D5
-#define SERVO_5     D6
+#define I2C_SDA     D5
+#define I2C_SCL     D6
+
+#define SERVO_1     D0
+#define SERVO_2     D1
+#define SERVO_3     D2
+#define SERVO_4     D3
+#define SERVO_5     D4
+
+#define POTENTIOMETER_PIN A0
+#define BUTTON_PIN        D7
 
 #define WIFI_SSID "john-iphone"
 #define WIFI_PASS "xavier123"
