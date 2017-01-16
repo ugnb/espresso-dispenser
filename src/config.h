@@ -17,7 +17,13 @@
 #define POTENTIOMETER_PIN A0
 #define BUTTON_PIN        D7
 
-#define WIFI_SSID "john-iphone"
-#define WIFI_PASS "xavier123"
+#define MQTT_HOST  "m21.cloudmqtt.com"
+#define MQTT_PORT  16742
+#define MQTT_USER  "USER"
+#define MQTT_PASS  "PASS"
+#define MQTT_TOPIC "TOPIC"
+
+#define WIFI_SSID "SSID"
+#define WIFI_PASS "PASS"
 
 #endif

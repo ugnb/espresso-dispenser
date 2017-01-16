@@ -2,12 +2,10 @@
 
 PersistentConfiguration::PersistentConfiguration(String name, Logger& logger)
 : _logger(logger) {
-  _logger.Log("IN CONSRTUCTOR");
   SPIFFS.begin();
   _fileName = String("/") + name + String(".json");
   _config = NULL;
   _jsonBuffer = NULL;
-  _logger.Log("BEFORE LOAD");
   _load();
 }
 
@@ -16,7 +14,6 @@ void PersistentConfiguration::_load() {
     delete _jsonBuffer;
   }
   _jsonBuffer = new StaticJsonBuffer<1024>();
-  _logger.Log("BEFORE FILE OPEN");
 
   File configFile = SPIFFS.open(_fileName, "r");
   if (configFile) {
