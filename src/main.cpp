@@ -15,6 +15,7 @@
 Logger* logger = NULL;
 
 int selectedServo = 0;
+int isBusy = 0;
 
 void openServo();
 void closeServo();
@@ -23,7 +24,8 @@ void callback(const char* topic, byte* payload, unsigned int length) {
     logger->Log("Got message on topic %s", topic);
     int servo = String((char)payload[0]).toInt();
     logger->Log("Target servo %d", servo);
-    if(servo > 0 && servo < 6) {
+    if(servo > 0 && servo < 6 && isBusy == 0) {
+      isBusy = 1;
       selectedServo = servo - 1;
       openServo();
     }
@@ -45,17 +47,19 @@ int buttonState = 0;
 Ticker closeTimer;
 
 bool NETWORK_CONNECTED = false;
+bool ED_MQTT_CONNECTED = false;
 
 SSD1306  display(0x3c, D5, D6);
 
 void closeServo() {
   servoControl[selectedServo]->Close();
   closeTimer.detach();
+  isBusy = 0;
 }
 
 void openServo() {
   servoControl[selectedServo]->Open();
-  closeTimer.attach(0.2, closeServo);
+  closeTimer.attach(0.3, closeServo);
 }
 
 void setup() {
@@ -109,7 +113,10 @@ void setup() {
 }
 
 void loop() {
+  NETWORK_CONNECTED = (WiFi.status() == WL_CONNECTED);
+
   if (!client.connected()) {
+    ED_MQTT_CONNECTED = false;
     logger->Log("Connecting to MQTT server");
     if (
       client.connect(
@@ -119,26 +126,24 @@ void loop() {
     ) {
       logger->Log("Connected to MQTT server");
       client.subscribe("nespresso-alpha");
+      ED_MQTT_CONNECTED = true;
     }
     else {
       logger->Log("Could not connect to MQTT server");
     }
+  } else {
+    ED_MQTT_CONNECTED = true;
   }
   client.loop();
 
   // selectedServo = map(analogRead(POTENTIOMETER_PIN), 0, 1023, 0, 5);
 
-  // display.clear();
-  // display.drawString(0, 0, String("Servo:"));
-  // display.drawString(80, 0, String(selectedServo + 1));
+  display.clear();
+  display.drawString(0, 0, String("WiFi:"));
+  display.drawString(80, 0, String(NETWORK_CONNECTED ? "OK" : "FAIL"));
+  display.drawString(0, 30, String("MQTT:"));
+  display.drawString(80, 30, String(ED_MQTT_CONNECTED ? "OK" : "FAIL"));
 
-  // NETWORK_CONNECTED = (WiFi.status() == WL_CONNECTED);
-  //
-  // if(NETWORK_CONNECTED)
-  // {
-  //   logger->Log("Wifi connected");
-  // }
-
-  // display.display();
+  display.display();
   delay(20);
 }
